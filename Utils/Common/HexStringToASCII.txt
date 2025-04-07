@@ -1,0 +1,21 @@
+Public Function HexStringToAscii(ByVal hexString As String, _
+                                 Optional ByVal hexPrefix As String = "0x") As Variant
+    HexStringToAscii = CVErr(xlErrValue)  'default failure return value
+    If Left$(hexString, Len(hexPrefix)) = hexPrefix Then
+        Dim hexRaw As String
+        hexRaw = Right$(hexString, Len(hexString) - Len(hexPrefix))
+        '--- a valid hex string must be an even number of chars
+        If Len(hexRaw) Mod 2 = 0 Then
+            Dim numAsciiChars As Integer
+            numAsciiChars = Len(hexRaw) / 2
+            Dim returnString As String
+            Dim i As Integer
+            For i = 1 To numAsciiChars
+                returnString = returnString & Chr(Val("&h" & Mid$(hexRaw, (i * 2) - 1, 2)))
+            Next i
+            HexStringToAscii = returnString
+        End If
+    Else
+        HexStringToAscii = "DoubleVal"
+    End If
+End Function

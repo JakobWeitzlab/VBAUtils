@@ -1,0 +1,59 @@
+Sub CopyAllWorksheetsIntoOne()
+    Dim ws As Worksheet
+    Dim wb As Workbook
+    
+    Set wb = ActiveWorkbook
+       
+    Rem check if Paste sheet is already generated
+    If wb.Sheets(1).Name = "AllParameter" Then
+        MsgBox ("Paste-Sheet is already created, please click delete")
+        wb.Sheets(1).Delete
+        
+    End If
+    
+    Rem generate new Paste Sheet
+    wb.Sheets(1).Activate
+    wb.Sheets.Add.Name = "AllParameter"
+    wb.Sheets(2).Activate
+    wb.ActiveSheet.Cells(1, 1).Select
+    Range("A1:L6").Copy
+    wb.Sheets(1).Activate
+    wb.ActiveSheet.Cells(1, 1).Select
+    wb.ActiveSheet.Paste
+    wb.Sheets(2).Activate
+    
+CopyData:
+    
+    Dim LastRowData As Long
+    Dim LastRowDataPasteSheet As Long
+    Dim FirstRun As Boolean
+    FirstRun = True
+
+    For Each ws In wb.Sheets
+        If ws.Index <> 1 Then
+            ws.Activate
+            Rem Select Data to Copy
+            ws.Cells(7, 1).Select
+            Rem check if data is available
+            If ws.Cells(7, 1).Value <> "" Then
+                LastRowData = ws.Cells(Rows.Count, "A").End(xlUp).Row
+                ws.Range("A7:I" & LastRowData).Copy
+                wb.Sheets(1).Activate
+                Rem Paste Selection at Row 7
+                If FirstRun Then
+                    wb.ActiveSheet.Cells(7, 1).Select
+                    wb.ActiveSheet.Paste
+                    FirstRun = False
+                Else
+                    Rem Paste Data in AllParameter Sheet at first available row
+                    wb.ActiveSheet.Cells(7, 1).Select
+                    LastRowDataPasteSheet = wb.ActiveSheet.Cells(Rows.Count, "A").End(xlUp).Row + 1
+                    wb.ActiveSheet.Cells(LastRowDataPasteSheet, 1).Select
+                    wb.ActiveSheet.Paste
+                End If
+            End If
+        End If
+    Next ws
+        wb.Sheets(1).Activate
+        wb.ActiveSheet.Cells(1, 1).Select
+End Sub
